@@ -28,6 +28,8 @@
         Get retrieve images
       </button>
     </div>
+
+    <button type="button" value="Upload Photo" @click="testPy">testPy</button>
   </form>
 </template>
 
@@ -54,6 +56,21 @@ const handleSubmit = () => {
 
   axios
     .post("http://localhost:3000/upload/photo", formdata, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => {
+      console.log(res);
+    });
+};
+
+const testPy = () => {
+  const myHeaders = new Headers();
+  myHeaders.append("Content-Type", "application/json");
+
+  axios
+    .get("http://localhost:3000/name?firstname=Ram&lastname=Sharma", {
       headers: {
         "Content-Type": "multipart/form-data",
       },

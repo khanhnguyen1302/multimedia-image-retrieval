@@ -44,4 +44,18 @@ app.post("/upload/photo", upload.single("image"), (req, res) => {
   res.json({ message: "OK", file: req.file });
 });
 
+app.get("/name", (req, res) => {
+  var spawn = require("child_process").spawn;
+
+  var process = spawn("python", [
+    "./python.py",
+    req.query.firstname,
+    req.query.lastname,
+  ]);
+
+  process.stdout.on("data", function (data) {
+    res.send(data.toString());
+  });
+});
+
 app.listen(3000, () => console.log("Server started on port 3000"));
