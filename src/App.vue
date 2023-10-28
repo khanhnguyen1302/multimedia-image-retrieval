@@ -26,5 +26,25 @@ html {
 
 .logo {
   max-width: 500px;
+  width: 100%;
+}
+
+button {
+  background-color: #eee;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 8px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+}
+
+select {
+  background-color: #eee;
+  border: none;
+  padding: 10px 10px;
+  border-radius: 8px;
+  font-family: Avenir, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  margin-top: 10px;
 }
 </style>
