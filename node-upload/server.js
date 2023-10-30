@@ -25,11 +25,8 @@ var storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, __dirname + "/uploads");
   },
-  filename: function (req, file, cb) {
-    console.log("req >>>>>>>>>>>>>>>", req);
-    const tmp = file.originalname.split(".");
-    const fileExtension = tmp[tmp.length - 1];
-    cb(null, `${file.fieldname}-${Date.now()}.${fileExtension}`);
+  filename: function (_, file, cb) {
+    cb(null, `${file.fieldname}-uploaded.png`);
   },
 });
 
@@ -46,16 +43,29 @@ app.post("/upload/photo", upload.single("image"), (req, res) => {
 
 app.get("/name", (req, res) => {
   var spawn = require("child_process").spawn;
+  let resData;
 
-  var process = spawn("python", [
+  // change path here
+  // mac: install virtualenv
+  let path = "./venv/bin/python";
+
+  // var process = spawn(path, [
+  //   `/Users/khanhnguyen/workspace/study/Multimedia/DSHcls.py --query_image="/Users/khanhnguyen/workspace/study/multimedia-image-retrieval/node-upload/uploads/image-uploaded.png"`,
+  // ]);
+
+  var process = spawn(path, [
     "./python.py",
     req.query.firstname,
     req.query.lastname,
   ]);
 
   process.stdout.on("data", function (data) {
+    console.log("data", data);
     res.send(data.toString());
+    resData = data;
   });
+
+  // res.json({ message: "OK", data: resData });
 });
 
 app.listen(3000, () => console.log("Server started on port 3000"));

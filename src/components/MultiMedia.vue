@@ -1,4 +1,8 @@
 <template>
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"
+  />
   <h2>Multimedia Image Retrieval Playgrounds of DoubleK</h2>
   <form>
     <label for="file-upload" class="custom-file-upload"> Choose a file </label>
@@ -7,7 +11,7 @@
       label="Choose Image"
       type="file"
       name="image"
-      accept="image/*"
+      accept="image/png"
       class="input-hidden"
       @change="handleChange"
     />
@@ -28,18 +32,24 @@
     </select>
 
     <div class="retrieve">
-      <button type="button" value="Upload Photo" @click="handleSubmit">
-        Get retrieve images
+      <button type="button" value="Upload Photo" @click="handleRetrieve">
+        <span v-if="!isLoading">Get retrieve images</span>
+        <i v-else class="fa fa-spinner fa-spin"></i>
       </button>
     </div>
 
-    <div class="result-container">
+    <div v-if="!list || list.length < selected" class="result-container">
       <div class="preview-img-small" v-for="index in selected" :key="index">
-        {{ index }}
+        <span>{{ index }}</span>
       </div>
     </div>
 
-    <!-- <button type="button" value="Upload Photo" @click="testPy">testPy</button> -->
+    <div v-else class="result-container">
+      <div class="preview-img-small" v-for="index in selected" :key="index">
+        <img class="preview-img-small" :src="getImgUrl(list[index - 1])" />
+        {{ getInstanceName(list[index - 1]) }}
+      </div>
+    </div>
   </form>
 </template>
 
@@ -51,6 +61,8 @@ const fileInput = ref(null);
 const imgSrc = ref("");
 const selected = ref(5);
 const options = [5, 10, 15, 20];
+const isLoading = ref(false);
+const list = ref([]);
 
 const handleChange = (event) => {
   fileInput.value = event.target.files;
@@ -76,20 +88,44 @@ const handleSubmit = () => {
     });
 };
 
-// const testPy = () => {
-//   const myHeaders = new Headers();
-//   myHeaders.append("Content-Type", "application/json");
+const getImgUrl = (pic) => {
+  console.log(pic);
+  return require("./../data/train/" + pic);
+};
 
-//   axios
-//     .get("http://localhost:3000/name?firstname=Ram&lastname=Sharma", {
-//       headers: {
-//         "Content-Type": "multipart/form-data",
-//       },
-//     })
-//     .then((res) => {
-//       console.log(res);
-//     });
-// };
+const getInstanceName = (name) => {
+  if (!name) return "";
+
+  return name.split("/")[0];
+};
+
+const handleRetrieve = async () => {
+  isLoading.value = true;
+  const data = {
+    k: selected.value,
+    query_image:
+      "/Users/khanhnguyen/workspace/study/multimedia-image-retrieval/node-upload/uploads/image-uploaded.png",
+  };
+
+  const response = await fetch("http://localhost:9999/test", {
+    method: "POST",
+    headers: {
+      "Access-Control-Allow-Origin": "*",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(data),
+  });
+
+  const result = await response.json();
+
+  if (result?.list_image_retrieved) {
+    list.value = result?.list_image_retrieved;
+  }
+
+  console.log(list.value[0]);
+
+  isLoading.value = false;
+};
 </script>
 
 <style>
@@ -136,7 +172,46 @@ const handleSubmit = () => {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 10px;
-  margin-top: 10px;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.balls {
+  width: 1.5rem;
+  display: flex;
+  flex-flow: row nowrap;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.balls div {
+  width: 0.4em;
+  height: 0.4em;
+  border-radius: 50%;
+  background-color: #fc2f70;
+  transform: translateY(-100%);
+  animation: wave 0.8s ease-in-out alternate infinite;
+}
+
+.balls div:nth-of-type(1) {
+  animation-delay: -0.4s;
+}
+
+.balls div:nth-of-type(2) {
+  animation-delay: -0.2s;
+}
+
+@keyframes wave {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(100%);
+  }
+}
+
+.submit-button {
+  min-width: 150px;
+  align-items: center;
 }
 </style>
